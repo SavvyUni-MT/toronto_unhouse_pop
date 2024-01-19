@@ -1,0 +1,103 @@
+---
+title: "Toronto's unhoused population"
+author: 
+  - First author
+thanks: "Code and data are available at: <https://github.com/SavvyUni-MT/toronto_unhouse_pop.git>."
+date: today
+date-format: long
+abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+format: pdf
+number-sections: true
+bibliography: references.bib
+---
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+#### Workspace setup ####
+#install.packages("here")
+
+library(tidyverse)
+library(knitr)
+
+#### Import the data ####
+toronto_shelters_clean <-
+  read_csv(
+    here::here("outputs/data/edited_data.csv"),
+    show_col_types = FALSE
+  )
+```
+
+
+# Introduction
+
+You can and should cross-reference sections and sub-sections. 
+
+The remainder of this paper is structured as follows. @sec-data....
+
+Data is downloaded from the @opendatatoronto. We analysis the data in R (@citeR)
+
+# Data {#sec-data}
+
+We then create a summary statistic on the basis of monthly groups, using `summarise()` from `tidyverse` [@tidyverse]. We use `kable()` from `knitr` [@knitr] to create @tbl-toronto. 
+
+```{r}
+#| label: tbl-toronto
+#| tbl-cap: Shelter usage in Toronto in 2021
+#| echo: false
+
+toronto_shelters_clean |>
+  mutate(occupancy_month = month(
+    occupancy_date,
+    label = TRUE,
+    abbr = FALSE
+  )) |>
+  arrange(month(occupancy_date)) |> 
+  drop_na(occupied_beds) |>
+  summarise(number_occupied = mean(occupied_beds),
+            .by = occupancy_month) |>
+  kable(
+    col.names = c("Month", "Average daily number of occupied beds"),
+    digits = 1
+  )
+```
+
+
+Refer to @fig-toronto
+
+```{r}
+#| label: fig-toronto
+#| fig-cap: Shelter usage in Toronto in 2021
+#| echo: false
+
+toronto_shelters_clean |>
+  mutate(occupancy_month = month(
+    occupancy_date,
+    label = TRUE,
+    abbr = FALSE
+  )) |>
+  arrange(month(occupancy_date)) |> 
+  drop_na(occupied_beds) |>
+  summarise(number_occupied = mean(occupied_beds),
+            .by = occupancy_month) |>
+  ggplot(aes(x=occupancy_month, y = number_occupied)) + geom_point()
+```
+
+\newpage
+
+\appendix
+
+# Appendix {-}
+
+
+# Additional data details
+
+
+
+\newpage
+
+
+# References
+
+
